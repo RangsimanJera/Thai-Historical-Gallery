@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image"  content="https://i.pinimg.com/originals/0a/87/dd/0a87dd495fdfef1852807af2bc2a3602.jpg">
+    <meta name="twitter:image" content="https://i.pinimg.com/originals/0a/87/dd/0a87dd495fdfef1852807af2bc2a3602.jpg">
+    <title>History</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap');
+    </style>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <div class="loader"></div>
+    <button class="btn" onclick="change()">
+        <div class="sun"></div>
+        <div class="moon visible">
+          <div class="star"></div>
+          <div class="star small"></div>
+        </div>
+    </button>
+    <div id="particles-js"></div>
+    <div class="character">
+        <img class="spritesheet pixelart sleep" src="cat.png" alt="">
+    </div>
+    <div id="joyDiv"></div>
+    <div class="navi">
+        <span>&#8592;</span><h6>arrow key</h6><span>&#8594;</span><h6>or</h6>
+        <div class="scroll-downs">
+            <div class="mousey">
+              <div class="scroller"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <section class="home">
+            <h4>เหตุการณ์สำคัญทาง<br>ประวัติศาสตร์ไทย | 609</h4>
+            <div class="back"></div>
+            <div class="timeline">
+                <div class="group">
+                    <div class="line"></div>
+                    <div class="circle"></div>
+                </div>                    
+            </div>   
+        </section>
+    </div>
+    
+    <script src="particles.js"></script>
+    <script src="app.js"></script>
+    <script src="joy.js"></script>
+    <script>
+        var mode = 1;
+        const sun = document.querySelector('.sun')
+        const moon = document.querySelector('.moon')
+        function change() {
+            sun.classList.toggle('visible')
+            moon.classList.toggle('visible')
+            if(mode === 1) {
+                mode = 2;
+                root.style.setProperty('--gold', '#f8f4ed');
+                root.style.setProperty('--black', '#be9b49');
+                root.style.setProperty('--black2', '#f8f4ed');
+                root.style.setProperty('--white', '#121210');
+            } else {
+                mode = 1;
+                root.style.setProperty('--gold', '#be9b49');
+                root.style.setProperty('--black', '#121210');
+                root.style.setProperty('--black2', '#121210');
+                root.style.setProperty('--white', '#f8f4ed');
+            }
+        }
+    
+        const joyId = document.getElementById("joyDiv");
+        const navi = document.querySelector(".navi");
+        if (navigator.maxTouchPoints >= 1) {
+            joyId.style.display = "block";
+            navi.style.display = "none";
+            joyS();
+        } else {
+            navi.style.display = "flex";
+        }
+
+        var joyPos;
+        
+        var joy = new JoyStick('joyDiv',{
+            // The ID of canvas element
+            title: 'joystick',
+            // width/height
+            width: 120,
+            height: 120,
+            // Internal color of Stick
+            internalFillColor: '#f8f4ed',
+            // Border width of Stick
+            internalLineWidth: 5,
+            // Border color of Stick
+            internalStrokeColor: '#f8f4ed',
+            // External reference circonference width
+            externalLineWidth: 5,
+            //External reference circonference color
+            externalStrokeColor: '#f8f4ed',
+            // Sets the behavior of the stick
+            autoReturnToCenter: true
+        });
+        function joyS() {
+            joyPos = setInterval(function(){
+                if(joy.GetX() != 0) {
+                    clearInterval(joyPos);
+                    anim();
+                }
+            }, 50);
+        }
+
+        let state = 1;
+        var walkR;
+        var jIdle;
+        function anim() {
+            clear();
+            state = 1;
+            console.log(joy.GetX())
+            if(joy.GetX() > 0) {
+                walkR = setInterval(function(){
+                    console.log(joy.GetX())
+                    container.scrollLeft += 10;
+                    character.className = "spritesheet pixelart face-right";
+                    if(joy.GetX() <= 0) {
+                        clearInterval(walkR);
+                        joyIdle();
+                    }
+                }, 50);
+            }
+            else if(joy.GetX() < 0) {
+                walkR = setInterval(function(){
+                    console.log(joy.GetX())
+                    container.scrollLeft -= 10;
+                    character.className = "spritesheet pixelart face-left";
+                    if(joy.GetX() >= 0) {
+                        clearInterval(walkR);
+                        joyIdle();
+                    }
+                }, 50);
+            }
+        }
+
+        function joyIdle() {
+            jIdle = setInterval(function(){
+                if(state === 1) {
+                    state = 2;
+                    character.className = "spritesheet pixelart pre";
+                    preIdle = setTimeout(() => {
+                        character.className = "spritesheet pixelart pre-idle";
+                    }, 100);
+                    idle = setTimeout(() => {
+                        character.className = "spritesheet pixelart idle";
+                    }, 1000);
+                    lick = setTimeout(() => {
+                        character.className = "spritesheet pixelart lick";
+                    }, 4000);
+                    idle2 = setTimeout(() => {
+                        character.className = "spritesheet pixelart idle";
+                    }, 5000);
+                    sleep = setTimeout(() => {
+                        character.className = "spritesheet pixelart sleep";
+                    }, 6000);
+                }
+                if(joy.GetX() != 0) {
+                    clearInterval(jIdle);
+                    anim();
+                }
+            }, 50);
+            
+        }
+
+        const container = document.querySelector('.container');
+        const particles = document.getElementById("particles-js");
+        const cat = document.querySelector('.character');
+        const character = document.querySelector('.spritesheet');
+        var isScrolling;
+        var start = 1;
+
+        particles.addEventListener('wheel', (e)=> {
+            e.preventDefault();
+            if(start === 1) {
+                start = 2;
+                navi.style.opacity = "0";
+                setTimeout(() => {
+                    navi.style.display = "none";
+                }, 500);
+            }
+            clear();
+            if(e.deltaY > 0) {
+                container.scrollLeft += 20;
+                character.className = "spritesheet pixelart face-right";
+            }
+            else if(e.deltaY < 0) {
+                container.scrollLeft -= 20;
+                character.className = "spritesheet pixelart face-left";
+            }
+            else {
+                character.className = "spritesheet pixelart sleep";
+            }
+            window.clearTimeout( isScrolling );
+            isScrolling = setTimeout(function() {
+                idlecat();
+            }, 66);
+        }, false)
+        document.onkeydown = (e) => {
+            e = e || window.event;
+            if (e.keyCode === 37) {
+                if(start === 1) {
+                    start = 2;
+                    navi.style.opacity = "0";
+                    setTimeout(() => {
+                        navi.style.display = "none";
+                    }, 500);
+                }
+                clear();
+                container.scrollLeft -= 10;
+                character.className = "spritesheet pixelart face-left";
+            } else if (e.keyCode === 39) {
+                if(start === 1) {
+                    start = 2;
+                    navi.style.opacity = "0";
+                    setTimeout(() => {
+                        navi.style.display = "none";
+                    }, 500);
+                }
+                clear();
+                container.scrollLeft += 10;
+                character.className = "spritesheet pixelart face-right";
+            }
+        }
+        function clear() {
+            clearTimeout(preIdle);
+            clearTimeout(idle);
+            clearTimeout(lick);
+            clearTimeout(idle2);
+            clearTimeout(sleep);
+        }
+        var preIdle;
+        var idle;
+        var lick;
+        var idle2;
+        var sleep;
+
+        document.onkeyup = (e) => {
+            e = e || window.event;
+            if (e.keyCode === 37 || e.keyCode === 39) {
+                idlecat();
+            }
+        }
+        
+        function idlecat() {
+            character.className = "spritesheet pixelart pre";
+                preIdle = setTimeout(() => {
+                    character.className = "spritesheet pixelart pre-idle";
+                }, 100);
+                idle = setTimeout(() => {
+                    character.className = "spritesheet pixelart idle";
+                }, 1000);
+                lick = setTimeout(() => {
+                    character.className = "spritesheet pixelart lick";
+                }, 4000);
+                idle2 = setTimeout(() => {
+                    character.className = "spritesheet pixelart idle";
+                }, 5000);
+                sleep = setTimeout(() => {
+                    character.className = "spritesheet pixelart sleep";
+                }, 6000);
+        }
+
+        setInterval(variable, 1000);
+        var root = document.querySelector(':root');
+        function variable() {
+            leftsize = length*50 + 'vw';
+            root.style.setProperty('--left-size', leftsize);
+            translateY = getComputedStyle(document.documentElement).getPropertyValue('--char-posnum');
+            translateYnum = Number(translateY)+15;
+            size = getComputedStyle(document.documentElement).getPropertyValue('--size');
+        }
+
+        const url = 'https://script.google.com/macros/s/AKfycbx7ZB7PYTPN9eA4X74TinuQUPEIZwHuI1TOJgr_aQTZOBJUVyVBog70j7PBCEPYZ_9n/exec';
+        let Data = [];
+        let length;
+
+        fetch(url).then((data) => {
+            return data.json();
+        }) .then((data) => {
+            Data = data.data;
+            create();
+        }) .then(() => {
+            character.className = "spritesheet pixelart idle";
+            setTimeout(() => {
+                document.querySelector(".loader").style.display = "none";
+            }, 1000);
+        });
+
+        function create() {
+            length = Data.length;
+            Data = Data.map((data) => {
+                return data = '<section>' + 
+                              '<div class="hover"></div>' +
+                              '<div class="size">' +
+                              '<div class="pic">' +
+                              '<img src="' + data.image + '" alt="image">' +
+                              '</div>' +
+                              '<div class="timeline">' +
+                              '<div class="group">' +
+                              '<div class="line">' +
+                              '</div>' +
+                              '<div class="circle"></div>' +
+                              '</div>' +
+                              '</div>' +
+                              '<div class="topic">' +
+                              '<h2>' + data.day + ' ' + data.month + ' พ.ศ. ' + data.year + '</h2>' +
+                              '<h5>' + data.name + ' ' + data.surname + ' | ' + data.no + '</h5>' +
+                              '</div>' +
+                              '<div class="text">' +
+                              '<h1 data-text="' + data.year + '">' + data.year + '</h1>' +
+                              '<div class="content">' +
+                              '<h3>' + data.day + ' ' + data.month + '</h3>' +
+                              '<p>' + data.event + '</p>' +
+                              '</div>' +
+                              '</div>' +
+                              '</div>' +
+                              '</section>';         
+            });
+            Data = Data.join('');
+            container.innerHTML = '<section class="home"><h4>เหตุการณ์สำคัญทาง<br>ประวัติศาสตร์ไทย | 609</h4><div class="back"></div><div class="timeline"><div class="group"><div class="line"></div><div class="circle"></div></div></div></section>' + Data;
+            const hover = document.querySelectorAll('.hover');
+            
+            for(let i=0; i<hover.length; i++) {
+                hover[i].addEventListener('mouseover', (e) => {
+                    cat.style.transform = "translate(-50%, "+ translateYnum + "vh)";
+                    console.log(e.target.parentElement)
+                    e.target.parentElement.style.width = "100vw";
+                })
+                hover[i].addEventListener('mouseout', (e) => {
+                    cat.style.transform = "translate(-50%, "+ translateY + "vh)";
+                    e.target.parentElement.style.width = size + "vw";
+                })
+            }
+            
+        }
+    </script>
+</body>
+</html>
